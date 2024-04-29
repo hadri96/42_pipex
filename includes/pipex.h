@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/27 11:33:37 by hmorand           #+#    #+#             */
-/*   Updated: 2024/04/27 11:33:41 by hmorand          ###   ########.ch       */
+/*   Created: 2024/04/29 14:48:56 by hmorand           #+#    #+#             */
+/*   Updated: 2024/04/29 14:48:56 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,17 @@ typedef struct s_command
 	int		n_args;
 }	t_command;
 
+typedef struct s_pipex
+{
+	t_command	*commands;
+	pid_t		*cpids;
+	char		**env;
+	char		*infile;
+	char		*outfile;
+	int			current;
+	int			status;
+}	t_pipex;
+
 // Parsing of commands and paths
 
 char		**get_paths(char **env);
@@ -40,5 +51,10 @@ t_command	*parse_commands(char *argv[], int argc, char *env[]);
 
 void		display_commands(t_command *commands);
 int			n_commands(t_command *commands);
+
+// Redirection
+
+int			redirect_output(char *outfile);
+int			redirect_input(char *infile);
 
 #endif

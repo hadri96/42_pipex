@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/26 15:16:30 by hmorand           #+#    #+#             */
-/*   Updated: 2024/04/26 15:16:30 by hmorand          ###   ########.ch       */
+/*   Created: 2024/04/28 15:16:58 by hmorand           #+#    #+#             */
+/*   Updated: 2024/04/28 15:16:58 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_list	*ft_lstmap(t_list *ls, void *(*f)(void *), void (*del)(void *))
 			new_list = new_elem;
 		else
 			ft_lstadd_back(&new_list, new_elem);
-		ls = lst->next;
+		ls = ls->next;
 	}
 	return (new_list);
 }

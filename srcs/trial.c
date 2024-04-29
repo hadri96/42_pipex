@@ -1,175 +1,121 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   settings.json                                      :+:      :+:    :+:   */
+/*   trial.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/27 11:57:24 by hmorand           #+#    #+#             */
-/*   Updated: 2024/04/27 12:50:20 by hmorand          ###   ########.ch       */
+/*   Created: 2024/04/29 14:49:00 by hmorand           #+#    #+#             */
+/*   Updated: 2024/04/29 14:49:15 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	redirect_output(char **argv, int argc)
+void	add_pid(pid_t pid, pid_t *cpids)
 {
-	int	fd;
-
-	fd = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	if (dup2(fd, STDOUT_FILENO) == -1)
-	{
-		perror("dup2");
-		exit(EXIT_FAILURE);
-	}
-	close(fd);
+	while (*cpids)
+		cpids++;
+	*cpids++ = pid;
+	*cpids = 0;
 }
 
-int	**alloc_pipes(int n)
+int	execute(t_pipex *pipex, char *infile, char *outfile, int fd_in)
 {
-	int	**pipes;
-	int	i;
+	int		fd_out;
+	int		fds[2];
+	pid_t	pid;
 
-	pipes = galloc (sizeof(int *) * n - 1);
-	if (!pipes)
+	if (!outfile)
+		pipe(fds);
+	pid = fork();
+	if (pid == 0)
 	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
-	i = 0;
-	while (i < n - 1)
-	{
-		pipes[i] = galloc(sizeof(int) * 2);
-		if (!pipes[i])
-		{
-			perror("malloc");
-			exit(EXIT_FAILURE);
-		}
-	}
-	return (pipes);
-}
-
-
-
-int	**initialise(int **cpids, char **argv, int argc, int n)
-{
-	int	**pipes;
-	int	i;
-
-	redirect_output(argv, argc);
-	*cpids = galloc(sizeof(pid_t) * n);
-	if (!*cpids)
-	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
-	pipes = alloc_pipes(n);
-	i = 0;
-	ft_printf("Hello");
-	while (i < n - 1)
-	{
-		if (pipe(pipes[i]) == -1)
-		{
-			perror("pipe");
-			exit(EXIT_FAILURE);
-		}
-	}
-	return (pipes);
-}
-
-void	close_pipes(int **pipes, int n)
-{
-	int	i;
-
-	i = -1;
-	while (++i < n - 1)
-	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
-	}
-}
-
-void	execute(t_command *commands, pid_t **cpids, int ***pipes, char **env)
-{
-	int	i;
-
-	i = -1;
-	while (commands[i].name != NULL)
-	{
-		(*cpids)[i] = fork();
-		if ((*cpids)[i] == -1)
-		{
-			perror("fork");
-			exit(EXIT_FAILURE);
-		}
-		if ((*cpids)[i] == 0)
-		{
-			if (i > 0)
-			{
-				dup2((*pipes)[i - 1][0], STDIN_FILENO);
-				close((*pipes)[i - 1][1]);
-			}
-
-			if (i < n_commands(commands) - 1)
-			{
-				dup2((*pipes)[i][1], STDOUT_FILENO);
-				close((*pipes)[i][0]);
-			}
-
-			//close_pipes(*pipes, n_commands(commands));
-			execve(commands[i].path, commands[i].args, env);
-			perror("execve");
-			exit(EXIT_FAILURE);
-		}
+		if (infile)
+			fd_in = redirect_input(infile);
+		dup2(fd_in, STDIN_FILENO);
+		if (outfile)
+			fd_out = redirect_output(outfile);
 		else
-		{
-			if (i > 0)
-			{
-				close((*pipes)[i - 1][0]);
-				close((*pipes)[i - 1][1]);
-			}
-			ft_printf("Parent closed pipes for child %d\n", i);
-		}
+			dup2(fds[1], STDOUT_FILENO);
+		close(fd_in);
+		close(fds[0]);
+		close(fds[1]);
+		execve(pipex->commands[pipex->current].path,
+			pipex->commands[pipex->current].args, pipex->env);
+		perror("Execve");
+		exit(EXIT_FAILURE);
 	}
+	add_pid(pid, pipex->cpids);
+	if (!outfile)
+	{
+		close(fds[1]);
+		return (fds[0]);
+	}
+	return (-1);
+
 }
 
-void	wait_for_children(int n, pid_t *cpids)
+t_pipex	initialise_pipex(char **argv, char **env, int argc)
 {
-	int	i;
+	t_pipex	pipex;
+
+	pipex.commands = parse_commands(argv, argc, env);
+	pipex.cpids = galloc(sizeof(pid_t) * (argc - 2));
+	if (!pipex.cpids)
+	{
+		perror("malloc cpids");
+		exit(EXIT_FAILURE);
+	}
+	pipex.env = env;
+	pipex.infile = argv[1];
+	pipex.outfile = argv[argc - 1];
+	pipex.current = 0;
+	return (pipex);
+}
+
+
+int	wait_for_children(pid_t *cpids)
+{
 	int	status;
 
-	i = -1;
-	while (++i < n)
+	while (*cpids)
 	{
-		waitpid(cpids[i], &status, 0);
-		if (WIFEXITED(status))
-			ft_printf("Child %d exited with status %d\n",
-				cpids[i], WEXITSTATUS(status));
+		waitpid(*cpids, &status, 0);
+		cpids++;
 	}
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return (WTERMSIG(status) + 128);
+	return (0);
 }
-
 
 int	main(int argc, char *argv[], char *env[])
 {
-	t_command	*commands;
-	pid_t		*cpids;
-	int			**pipes;
-	int			n;
+	t_pipex	pipex;
+	int		i;
+	int		fd_in;
+	int		status;
 
-	commands = parse_commands(argv, argc, env);
-	n = n_commands(commands);
-	//display_commands(commands);
-	ft_printf("Outfile: %s\n", argv[argc - 1]);
-	pipes = initialise(&cpids, argv, argc, n);
-	ft_printf("Execute");
-	execute(commands, &cpids, &pipes, env);
-	close_pipes(pipes, n);
-	wait_for_children(n, cpids);
-	exit(1);
-	return (0);
+	if (argc < 5)
+		exit(2);
+	pipex = initialise_pipex(argv, env, argc);
+	fd_in = -1;
+	i = 2;
+	while (i < argc - 1)
+	{
+		if (i == 2 && i == argc - 2)
+			execute(&pipex, pipex.infile, pipex.outfile, fd_in);
+		else if (i == 2)
+			fd_in = execute(&pipex, pipex.infile, NULL, fd_in);
+		else if (i == argc - 2)
+			execute(&pipex, NULL, pipex.outfile, fd_in);
+		else
+			fd_in = execute(&pipex, NULL, NULL, fd_in);
+		i++;
+		pipex.current++;
+	}
+	status = wait_for_children(pipex.cpids);
+	exit(status);
 }
