@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   trial.c                                            :+:      :+:    :+:   */
+/*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/29 14:49:00 by hmorand           #+#    #+#             */
-/*   Updated: 2024/04/29 14:49:15 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/02 09:37:00 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/02 09:37:00 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,35 @@ void	add_pid(pid_t pid, pid_t *cpids)
 	*cpids = 0;
 }
 
-int	execute(t_pipex *pipex, char *infile, char *outfile, int fd_in)
+int	wait_for_children(pid_t *cpids)
 {
-	int		fd_out;
+	int	status;
+
+	while (*cpids)
+	{
+		waitpid(*cpids, &status, 0);
+		cpids++;
+	}
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return (WTERMSIG(status) + 128);
+	return (0);
+}
+
+void	execute(t_pipex *pipex, int fds[2], int fd_in)
+{
+	close(fd_in);
+	close(fds[0]);
+	close(fds[1]);
+	execve(pipex->commands[pipex->current].path,
+		pipex->commands[pipex->current].args, pipex->env);
+	perror("Execve");
+	exit(EXIT_FAILURE);
+}
+
+int	piping(t_pipex *pipex, char *infile, char *outfile, int fd_in)
+{
 	int		fds[2];
 	pid_t	pid;
 
@@ -35,16 +61,10 @@ int	execute(t_pipex *pipex, char *infile, char *outfile, int fd_in)
 			fd_in = redirect_input(infile);
 		dup2(fd_in, STDIN_FILENO);
 		if (outfile)
-			fd_out = redirect_output(outfile);
+			redirect_output(outfile);
 		else
 			dup2(fds[1], STDOUT_FILENO);
-		close(fd_in);
-		close(fds[0]);
-		close(fds[1]);
-		execve(pipex->commands[pipex->current].path,
-			pipex->commands[pipex->current].args, pipex->env);
-		perror("Execve");
-		exit(EXIT_FAILURE);
+		execute(pipex, fds, fd_in);
 	}
 	add_pid(pid, pipex->cpids);
 	if (!outfile)
@@ -53,7 +73,6 @@ int	execute(t_pipex *pipex, char *infile, char *outfile, int fd_in)
 		return (fds[0]);
 	}
 	return (-1);
-
 }
 
 t_pipex	initialise_pipex(char **argv, char **env, int argc)
@@ -72,50 +91,4 @@ t_pipex	initialise_pipex(char **argv, char **env, int argc)
 	pipex.outfile = argv[argc - 1];
 	pipex.current = 0;
 	return (pipex);
-}
-
-
-int	wait_for_children(pid_t *cpids)
-{
-	int	status;
-
-	while (*cpids)
-	{
-		waitpid(*cpids, &status, 0);
-		cpids++;
-	}
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
-		return (WTERMSIG(status) + 128);
-	return (0);
-}
-
-int	main(int argc, char *argv[], char *env[])
-{
-	t_pipex	pipex;
-	int		i;
-	int		fd_in;
-	int		status;
-
-	if (argc < 5)
-		exit(2);
-	pipex = initialise_pipex(argv, env, argc);
-	fd_in = -1;
-	i = 2;
-	while (i < argc - 1)
-	{
-		if (i == 2 && i == argc - 2)
-			execute(&pipex, pipex.infile, pipex.outfile, fd_in);
-		else if (i == 2)
-			fd_in = execute(&pipex, pipex.infile, NULL, fd_in);
-		else if (i == argc - 2)
-			execute(&pipex, NULL, pipex.outfile, fd_in);
-		else
-			fd_in = execute(&pipex, NULL, NULL, fd_in);
-		i++;
-		pipex.current++;
-	}
-	status = wait_for_children(pipex.cpids);
-	exit(status);
 }

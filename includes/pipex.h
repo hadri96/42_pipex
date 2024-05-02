@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/29 14:48:56 by hmorand           #+#    #+#             */
-/*   Updated: 2024/04/29 14:48:56 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/02 09:38:35 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/02 09:38:35 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,13 @@ int			n_commands(t_command *commands);
 
 int			redirect_output(char *outfile);
 int			redirect_input(char *infile);
+
+// Execution
+
+void		add_pid(pid_t pid, pid_t *cpids);
+int			wait_for_children(pid_t *cpids);
+void		execute(t_pipex *pipex, int fds[2], int fd_in);
+int			piping(t_pipex *pipex, char *infile, char *outfile, int fd_in);
+t_pipex		initialise_pipex(char **argv, char **env, int argc);
 
 #endif

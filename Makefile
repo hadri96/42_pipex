@@ -9,7 +9,8 @@ RM			=	rm -f
 SRCS		=	srcs/parse.c \
 				srcs/redirection.c \
 				srcs/command_utils.c \
-				srcs/trial.c
+				srcs/execution.c \
+				srcs/pipex.c
 
 OBJS		=	$(SRCS:%.c=%.o)
 
