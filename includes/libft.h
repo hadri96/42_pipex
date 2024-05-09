@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/26 15:09:03 by hmorand           #+#    #+#             */
-/*   Updated: 2024/04/26 15:09:37 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 13:57:29 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 13:57:35 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,15 +123,15 @@ char			**strarr_pop(char **arr, int index);
 /*                                                                            */
 /* ************************************************************************** */
 
-void			ft_putchar(char c, int *i);
-void			ft_putstr(char *str, int *i);
-void			ft_putnbr(int nb, int *i);
-void			ft_putunnbr(unsigned int nb, int *i);
-void			ft_puthex_long(long unsigned int nb, int *i);
-void			ft_puthex_up(unsigned int nb, int *i);
-void			ft_puthex_low(unsigned int nb, int *i);
-void			ft_putptr(void *ptr, int *i);
-int				ft_printf(const char *str, ...);
+void			ft_putchar(int fd, char c, int *i);
+void			ft_putstr(int fd, char *str, int *i);
+void			ft_putnbr(int fd, int nb, int *i);
+void			ft_putunnbr(int fd, unsigned int nb, int *i);
+void			ft_puthex_long(int fd, long unsigned int nb, int *i);
+void			ft_puthex_up(int fd, unsigned int nb, int *i);
+void			ft_puthex_low(int fd, unsigned int nb, int *i);
+void			ft_putptr(int fd, void *ptr, int *i);
+int				ft_printf(int fd, const char *str, ...);
 
 /* ************************************************************************** */
 /*                                                                            */

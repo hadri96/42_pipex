@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/02 09:37:00 by hmorand           #+#    #+#             */
-/*   Updated: 2024/05/02 09:37:00 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 15:50:49 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 15:50:49 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ void	execute(t_pipex *pipex, int fds[2], int fd_in)
 	close(fd_in);
 	close(fds[0]);
 	close(fds[1]);
+	if (!pipex->commands[pipex->current].path)
+	{
+		ft_printf(STDERR_FILENO, "pipex: %s: command not found\n",
+			pipex->commands[pipex->current].name);
+		exit(127);
+	}
 	execve(pipex->commands[pipex->current].path,
 		pipex->commands[pipex->current].args, pipex->env);
 	perror("Execve");
@@ -72,6 +78,7 @@ int	piping(t_pipex *pipex, char *infile, char *outfile, int fd_in)
 		close(fds[1]);
 		return (fds[0]);
 	}
+	close(fds[0]);
 	return (-1);
 }
 

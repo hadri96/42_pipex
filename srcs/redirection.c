@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 29/04/2024 14:46:00 by hmorand           #+#    #+#             */
-/*   Updated: 29/04/2024 14:46:00 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 17:42:10 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 17:42:10 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	redirect_output(char *outfile)
 	fd = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		perror("open outfile");
+		ft_printf(2, "pipex: permission denied: %s\n", outfile);
 		exit(EXIT_FAILURE);
 	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
@@ -37,7 +37,8 @@ int	redirect_input(char *infile)
 	fd = open(infile, O_RDONLY);
 	if (fd == -1)
 	{
-		perror("open infile");
+		ft_printf(2, "pipex: %s: No such file or directory\n",
+			infile);
 		exit(EXIT_FAILURE);
 	}
 	return (fd);

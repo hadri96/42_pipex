@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/23 17:17:59 by hmorand           #+#    #+#             */
-/*   Updated: 2024/02/23 17:25:45 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 16:52:34 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 17:20:42 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ char	*get_path(char **paths, char *command)
 	char	*path;
 	char	*subcommand;
 
+	if (access(command, F_OK) == 0)
+		return (command);
 	subcommand = ft_strjoin("/", command);
 	while (*paths)
 	{
@@ -42,6 +44,26 @@ char	*get_path(char **paths, char *command)
 	return (NULL);
 }
 
+char	*parse_arg(char *args)
+{
+	int		i;
+	char	*arg;
+
+	i = 1;
+	if (args[0] == '"' || args[0] == '\'')
+	{
+		while (args[i] != args[0] || args[i - 1] == '\\')
+			i++;
+		arg = galloc(sizeof(char) * i - 1);
+		if (!arg)
+			return (NULL);
+		ft_strlcpy(arg, args + 1, (size_t)(i));
+	}
+	else
+		arg = ft_split(args, ' ')[0];
+	return (arg);
+}
+
 char	*append_arg(t_command *command, char *args)
 {
 	char	*arg;
@@ -50,7 +72,7 @@ char	*append_arg(t_command *command, char *args)
 
 	if (args[0] == '"' || args[0] == '\'')
 	{
-		arg = ft_split(args, args[0])[0];
+		arg = parse_arg(args);
 		args += ft_strlen(arg) + 2;
 	}
 	else
@@ -116,11 +138,6 @@ t_command	*parse_commands(char *argv[], int argc, char *env[])
 		commands[i - 2].args = arr_insert(commands[i - 2].args,
 				0, commands[i - 2].name);
 		commands[i - 2].path = get_path(paths, commands[i - 2].name);
-		if (!commands[i - 2].path)
-		{
-			ft_printf("pipex: %s: command not found\n", commands[i - 2].name);
-			exit(1);
-		}
 	}
 	free_strarr(paths);
 	commands[i - 2] = (t_command){0, 0, 0, 0};
