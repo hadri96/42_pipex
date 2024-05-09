@@ -5,34 +5,34 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/21 14:34:14 by hmorand           #+#    #+#             */
-/*   Updated: 2024/02/21 14:34:14 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 13:59:28 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 13:59:31 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-void	print_arg(char type, va_list elements, int *i)
+void	print_arg(int fd, char type, va_list elements, int *i)
 {
 	if (type == 'c')
-		ft_putchar(va_arg(elements, int), i);
+		ft_putchar(fd, va_arg(elements, int), i);
 	else if (type == 's')
-		ft_putstr(va_arg(elements, char *), i);
+		ft_putstr(fd, va_arg(elements, char *), i);
 	else if (type == 'p')
-		ft_putptr(va_arg(elements, void *), i);
+		ft_putptr(fd, va_arg(elements, void *), i);
 	else if (type == 'd' || type == 'i')
-		ft_putnbr(va_arg(elements, int), i);
+		ft_putnbr(fd, va_arg(elements, int), i);
 	else if (type == 'u')
-		ft_putunnbr(va_arg(elements, unsigned int), i);
+		ft_putunnbr(fd, va_arg(elements, unsigned int), i);
 	else if (type == 'x')
-		ft_puthex_low(va_arg(elements, unsigned int), i);
+		ft_puthex_low(fd, va_arg(elements, unsigned int), i);
 	else if (type == 'X')
-		ft_puthex_up(va_arg(elements, unsigned int), i);
+		ft_puthex_up(fd, va_arg(elements, unsigned int), i);
 	else if (type == '%')
-		ft_putchar('%', i);
+		ft_putchar(fd, '%', i);
 }
 
-int	ft_printf(const char *str, ...)
+int	ft_printf(int fd, const char *str, ...)
 {
 	int		i;
 	int		j;
@@ -46,9 +46,9 @@ int	ft_printf(const char *str, ...)
 	while (str[j])
 	{
 		if (str[j] == '%')
-			print_arg(str[++j], elements, &i);
+			print_arg(fd, str[++j], elements, &i);
 		else
-			ft_putchar(str[j], &i);
+			ft_putchar(fd, str[j], &i);
 		j++;
 		if (err > i)
 			return (-1);

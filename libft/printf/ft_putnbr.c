@@ -5,29 +5,29 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/21 14:34:56 by hmorand           #+#    #+#             */
-/*   Updated: 2024/02/21 14:34:56 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 13:53:49 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 13:53:49 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-void	ft_putnbr(int nb, int *i)
+void	ft_putnbr(int fd, int nb, int *i)
 {
 	if (nb >= 0)
 		nb = -nb;
 	else
-		ft_putchar('-', i);
+		ft_putchar(fd, '-', i);
 	if (nb < -9)
-		ft_putnbr(-(nb / 10), i);
-	ft_putchar('0' - (nb % 10), i);
+		ft_putnbr(fd, -(nb / 10), i);
+	ft_putchar(fd, '0' - (nb % 10), i);
 }
 
-void	ft_putunnbr(unsigned int nb, int *i)
+void	ft_putunnbr(int fd, unsigned int nb, int *i)
 {
 	if (nb > 9)
-		ft_putunnbr(nb / 10, i);
-	ft_putchar('0' + (nb % 10), i);
+		ft_putunnbr(fd, nb / 10, i);
+	ft_putchar(fd, '0' + (nb % 10), i);
 }
 
 /* int main()

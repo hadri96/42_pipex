@@ -5,32 +5,32 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/21 14:34:23 by hmorand           #+#    #+#             */
-/*   Updated: 2024/02/21 14:34:23 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 13:52:35 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 13:53:08 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-void	ft_puthex_long(long unsigned int nb, int *i)
+void	ft_puthex_long(int fd, long unsigned int nb, int *i)
 {
 	if (nb > 15)
-		ft_puthex_long(nb / 16, i);
-	ft_putchar("0123456789abcdef"[nb % 16], i);
+		ft_puthex_long(fd, nb / 16, i);
+	ft_putchar(fd, "0123456789abcdef"[nb % 16], i);
 }
 
-void	ft_puthex_up(unsigned int nb, int *i)
+void	ft_puthex_up(int fd, unsigned int nb, int *i)
 {
 	if (nb > 15)
-		ft_puthex_up(nb / 16, i);
-	ft_putchar("0123456789ABCDEF"[nb % 16], i);
+		ft_puthex_up(fd, nb / 16, i);
+	ft_putchar(fd, "0123456789ABCDEF"[nb % 16], i);
 }
 
-void	ft_puthex_low(unsigned int nb, int *i)
+void	ft_puthex_low(int fd, unsigned int nb, int *i)
 {
 	if (nb > 15)
-		ft_puthex_low(nb / 16, i);
-	ft_putchar("0123456789abcdef"[nb % 16], i);
+		ft_puthex_low(fd, nb / 16, i);
+	ft_putchar(fd, "0123456789abcdef"[nb % 16], i);
 }
 
 /* int main()

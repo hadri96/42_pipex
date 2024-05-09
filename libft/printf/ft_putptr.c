@@ -5,20 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/21 14:34:48 by hmorand           #+#    #+#             */
-/*   Updated: 2024/02/21 14:34:48 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/08 13:54:02 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/08 13:54:02 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-void	ft_putptr(void *ptr, int *i)
+void	ft_putptr(int fd, void *ptr, int *i)
 {
 	unsigned long	location;
 
 	location = (unsigned long) ptr;
-	ft_putstr("0x", i);
-	ft_puthex_long(location, i);
+	ft_putstr(fd, "0x", i);
+	ft_puthex_long(fd, location, i);
 }
 
 /* int main()
