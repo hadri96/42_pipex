@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/08 17:21:25 by hmorand           #+#    #+#             */
-/*   Updated: 2024/05/08 17:21:25 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/10 11:43:50 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/10 11:43:50 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,7 @@ int	main(int argc, char *argv[], char *env[])
 	i = 2;
 	while (i < argc - 1)
 	{
-		if (i == 2 && i == argc - 2)
-			piping(&pipex, pipex.infile, pipex.outfile, fd_in);
-		else if (i == 2)
+		if (i == 2)
 			fd_in = piping(&pipex, pipex.infile, NULL, fd_in);
 		else if (i == argc - 2)
 			piping(&pipex, NULL, pipex.outfile, fd_in);

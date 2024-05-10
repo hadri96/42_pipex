@@ -7,6 +7,7 @@ INCLUDE 	=	includes
 CFLAGS		=	-Wall -Wextra -Werror -I$(INCLUDE) -Wno-deprecated -g
 RM			=	rm -f
 SRCS		=	srcs/parse.c \
+				srcs/path.c \
 				srcs/redirection.c \
 				srcs/command_utils.c \
 				srcs/execution.c \

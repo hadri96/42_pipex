@@ -5,44 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/08 16:52:34 by hmorand           #+#    #+#             */
-/*   Updated: 2024/05/08 17:20:42 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/10 11:43:30 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/10 11:43:30 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex.h"
-
-char	**get_paths(char **env)
-{
-	char	**paths;
-
-	while (ft_strncmp("PATH=", *env, 5))
-		env++;
-	paths = ft_split(ft_strchr(*env, '/'), ':');
-	if (!paths)
-		return (NULL);
-	return (paths);
-}
-
-char	*get_path(char **paths, char *command)
-{
-	char	*path;
-	char	*subcommand;
-
-	if (access(command, F_OK) == 0)
-		return (command);
-	subcommand = ft_strjoin("/", command);
-	while (*paths)
-	{
-		path = ft_strjoin(*paths, subcommand);
-		if (access(path, F_OK) == 0)
-			break ;
-		paths++;
-	}
-	if (access(path, F_OK) == 0)
-		return (path);
-	return (NULL);
-}
+#include "pipex.h"
 
 char	*parse_arg(char *args)
 {
@@ -70,16 +38,11 @@ char	*append_arg(t_command *command, char *args)
 	char	**new_args;
 	int		i;
 
+	arg = parse_arg(args);
 	if (args[0] == '"' || args[0] == '\'')
-	{
-		arg = parse_arg(args);
 		args += ft_strlen(arg) + 2;
-	}
 	else
-	{
-		arg = ft_split(args, ' ')[0];
 		args += ft_strlen(arg);
-	}
 	new_args = galloc(sizeof(char *) * ++command->n_args + 1);
 	if (!new_args)
 		return (args);

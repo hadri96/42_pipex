@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/02 09:38:35 by hmorand           #+#    #+#             */
-/*   Updated: 2024/05/02 09:38:35 by hmorand          ###   ########.ch       */
+/*   Created: 2024/05/09 13:48:32 by hmorand           #+#    #+#             */
+/*   Updated: 2024/05/09 13:48:38 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,13 @@ typedef struct s_pipex
 	int			status;
 }	t_pipex;
 
-// Parsing of commands and paths
+// Parsing of paths
 
 char		**get_paths(char **env);
 char		*get_path(char **paths, char *command);
+
+// Parsing of commands
+
 t_command	*parse_commands(char *argv[], int argc, char *env[]);
 
 // Command utils
